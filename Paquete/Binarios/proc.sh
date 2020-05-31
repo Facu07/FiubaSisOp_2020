@@ -177,7 +177,7 @@ do
 		then
 			procesarSalida
 		else
-			echo -e "$idTransaction,$cProcessingCode,$nTransactionAmount,$cSystemTrace,$cLocalTransactionTime,$cRetrievalReferenceNumber,$cAuthorizationResponse,$cResponseCode,$installments,$hostResponse,$cTicketNumber,$batchNumber,$cGuid,$cMessageType,$cMessageType_Response,Registro: $CONTEOREGISTROS no cumple con la estrucutra,$nombreArchivo" >> "$salida"
+			echo -e "$idTransaction,$cProcessingCode,$nTransactionAmount,$cSystemTrace,$cLocalTransactionTime,$cRetrievalReferenceNumber,$cAuthorizationResponse,$cResponseCode,$installments,$hostResponse,$cTicketNumber,$batchNumber,$cGuid,$cMessageType,$cMessageType_Response,Registro: $CANTREGISTROS no cumple con la estrucutra,$nombreArchivo" >> "$salida"
 		fi
 	done < "$file"
 	$BINDIR./glog.sh "proc" "$nombreArchivo tiene $CANTREGISTROS cantidad de registros"
