@@ -12,14 +12,14 @@ then
 			return 0									#Existe y no esta vacío && Existe y puede leerse 
 		fi
 		# Grabar en el log el nombre del archivo rechazado. Motivo: No es un archivo normal
-		$BINDIR./glog.sh "proc" "$nombreArchivo rechazado. Motivo: No es un archivo normal"
+		#$BINDIR./glog.sh "proc" "$nombreArchivo rechazado. Motivo: No es un archivo normal"
 	fi
 	# Grabar en el log el nombre del archivo rechazado. Motivo: No es legible
-	$BINDIR./glog.sh "proc" "$nombreArchivo rechazado. Motivo: No es legible"
+	#$BINDIR./glog.sh "proc" "$nombreArchivo rechazado. Motivo: No es legible"
 	return -1
 fi
 # Grabar en el log el nombre del archivo rechazado. Motivo: Archivo vacio
-$BINDIR./glog.sh "proc" "$nombreArchivo rechazado. Motivo: Archivo vacio"
+#$BINDIR./glog.sh "proc" "$nombreArchivo rechazado. Motivo: Archivo vacio"
 return -1
 
 }
@@ -32,7 +32,7 @@ then
 	# mes valido
 	return 0
 fi
-$BINDIR./glog.sh "proc" "$nombreArchivo rechazado. Motivo: $mm No es un mes valido"
+#$BINDIR./glog.sh "proc" "$nombreArchivo rechazado. Motivo: $mm No es un mes valido"
 return -1
 
 }
@@ -63,7 +63,7 @@ case $mm in
   ;;
  *)
 	# dia no valido
-	$BINDIR./glog.sh "proc" "$nombreArchivo rechazado. Motivo: $dd No es un dia valido"
+	#$BINDIR./glog.sh "proc" "$nombreArchivo rechazado. Motivo: $dd No es un dia valido"
 	return -1
 esac
 return -1
@@ -74,12 +74,12 @@ function validar_Repetido
 {
 
 
-for file in "$procesados/"*.csv;
+for file in "$aceptados/"*.csv;
 	do
 		if [[ $archivo == $file ]];
 		then
 			# Grabar en log que se rechaza el $nombreArchivo por que esta duplicado
-			$BINDIR./glog.sh "proc" "Se rechaza el $nombreArchivo por estar duplicado"
+			#$BINDIR./glog.sh "proc" "Se rechaza el $nombreArchivo por estar duplicado"
 			return -1 
 		fi
 	done
@@ -102,7 +102,7 @@ do
 	fi
 done < "$codigosProvincias"
 
-$BINDIR./glog.sh "proc" "Se rechaza el $nombreArchivo por tener un codigo de provincia no valido"
+#$BINDIR./glog.sh "proc" "Se rechaza el $nombreArchivo por tener un codigo de provincia no valido"
 return -1
 
 }
@@ -124,7 +124,7 @@ do
 	fi
 done < "$codigosComercios"
 
-$BINDIR./glog.sh "proc" "Se rechaza el $nombreArchivo por tener un codigo de comercio no valido"
+#$BINDIR./glog.sh "proc" "Se rechaza el $nombreArchivo por tener un codigo de comercio no valido"
 return -1
 
 }
@@ -165,7 +165,7 @@ do
 	CANTREGISTROS=0
 	if [ ! "$(ls $aceptados/)" ]
     then
-    	$BINDIR./glog.sh "proc" "No hay archivos en $aceptados..."
+    	#$BINDIR./glog.sh "proc" "No hay archivos en $aceptados..."
     	echo "Se proceso todo en $aceptados"
     	return 0
     fi  
@@ -177,10 +177,10 @@ do
 		then
 			procesarSalida
 		else
-			echo -e "$idTransaction,$cProcessingCode,$nTransactionAmount,$cSystemTrace,$cLocalTransactionTime,$cRetrievalReferenceNumber,$cAuthorizationResponse,$cResponseCode,$installments,$hostResponse,$cTicketNumber,$batchNumber,$cGuid,$cMessageType,$cMessageType_Response,Registro: $CANTREGISTROS no cumple con la estrucutra,$nombreArchivo" >> "$salida"
+			echo -e "$idTransaction,$cProcessingCode,$nTransactionAmount,$cSystemTrace,$cLocalTransactionTime,$cRetrievalReferenceNumber,$cAuthorizationResponse,$cResponseCode,$installments,$hostResponse,$cTicketNumber,$batchNumber,$cGuid,$cMessageType,$cMessageType_Response,Registro: $CANTREGISTROS no cumple con la estrucutra,$nombreArchivo" >> "$rechazados/rejectedData.csv"
 		fi
 	done < "$file"
-	$BINDIR./glog.sh "proc" "$nombreArchivo tiene $CANTREGISTROS cantidad de registros"
+	#$BINDIR./glog.sh "proc" "$nombreArchivo tiene $CANTREGISTROS cantidad de registros"
 done
 return 0
 
@@ -275,17 +275,15 @@ unset isO04_cTransactionAmount
 CICLO=0
 PROCESO_ACTIVO=true
 
-maestro="$DIRMAE"
-novedades="$DIRNOV"
-aceptados="$DIROK"
-rechazados="$DIRNOK"
-procesados="$DIRPROC"
-salida="$DIROUT"
-transacciones="$DIRTRANS"
+maestro=${PWD} #"$DIRMAE"
+novedades="$maestro/Paquete/Novedades" #"$DIRNOV"
+aceptados="$maestro/Aceptados" #"$DIROK"
+rechazados="$maestro/Rechazados" #"$DIRNOK"
+salida="$maestro/Salida" #"$DIROUT"
 
-touch "$DIRNOK/rejecteddata.csv"
+#touch "$DIRNOK/rejecteddata.csv"
 
-$BINDIR./glog.sh "proc" "Procesando... "
+#$BINDIR./glog.sh "proc" "Procesando... "
 function finalizar_proceso {
    let PROCESO_ACTIVO=false
 }
@@ -311,13 +309,13 @@ do
 			then	
 				mv $archivo $aceptados					# Mueve a la carpeta de aceptados
 				# Grabar en el log el nombre del archivo aceptado
-				$BINDIR./glog.sh "proc" "Archivo $archivo aceptado"
+				#$BINDIR./glog.sh "proc" "Archivo $archivo aceptado"
 			else
 				mv $archivo $rechazados					# Mueve a la carpeta de rechazados
 			fi
      	else
          	echo "Nada por procesar"
-         	$BINDIR./glog.sh "proc" "No hay archivos en $novedades..."
+         	#$BINDIR./glog.sh "proc" "No hay archivos en $novedades..."
      	fi
 		
 	done
@@ -330,12 +328,12 @@ do
 	sleep 10
 
 	#loggear el CICLO en el que voy
-	$BINDIR./glog.sh "proc" "Ciclo Nº: $CICLO"
+	#$BINDIR./glog.sh "proc" "Ciclo Nº: $CICLO"
 
 done
 
 PID_PROCESO=`ps -a | grep proc.sh | awk '{print $1}'`
-$BINDIR./glog.sh "proc" "Programa finalizado con pid: $PID_PROCESO"
+#$BINDIR./glog.sh "proc" "Programa finalizado con pid: $PID_PROCESO"
 
 exit 0
 
