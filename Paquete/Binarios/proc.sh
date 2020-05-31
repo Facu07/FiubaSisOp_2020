@@ -177,7 +177,7 @@ do
 		then
 			procesarSalida
 		else
-			grabar_rejecteddata
+			echo -e "$idTransaction,$cProcessingCode,$nTransactionAmount,$cSystemTrace,$cLocalTransactionTime,$cRetrievalReferenceNumber,$cAuthorizationResponse,$cResponseCode,$installments,$hostResponse,$cTicketNumber,$batchNumber,$cGuid,$cMessageType,$cMessageType_Response,Registro: $CONTEOREGISTROS no cumple con la estrucutra,$nombreArchivo" >> "$salida"
 		fi
 	done < "$file"
 	$BINDIR./glog.sh "proc" "$nombreArchivo tiene $CANTREGISTROS cantidad de registros"
@@ -188,9 +188,21 @@ return 0
 
 function registro_es_apto
 {
-return 0
+
+estructuraNovedades="$(find . -iname "EstructuraNovedades.csv")"
+
+while IFS=',' read col1 col2 col3 col4 col5 col6 col7 col8 col9 col10 col11 col12 col13 col14 col15
+do
+	if [[ $idTransaction = *$col1* ]] && [[ $cProcessingCode = *$col2* ]] && [[ $nTransactionAmount = *$col3* ]] && [[ $cSystemTrace = *$col4* ]] && [[ $cLocalTransactionTime = *$col5* ]] && [[ $cRetrievalReferenceNumber = *$col6* ]] && [[ $cAuthorizationResponse = *$col7* ]] && [[ $cResponseCode = *$col8* ]] && [[ $installments = *$col9* ]] && [[ $hostResponse = *$col10* ]] && [[ $cTicketNumber = *$col11* ]] && [[ $batchNumber = *$col12* ]] && [[ $cGuid = *$col13* ]] && [[ $cMessageType = *$col14* ]] && [[ $cMessageType_Response = *$col15* ]]
+	then
+		return 0
+	else 
+		return -1
+	fi
+done < "$estructuraNovedades"
 
 }
+
 
 function obtener_cResponseCodeShortDescription
 {
@@ -249,14 +261,6 @@ unset isO13_cLocalTransactionDate
 unset isO42_cMerchantCode
 unset isO49_cTransactionCurrencyCode
 unset isO04_cTransactionAmount
-
-}
-
-function grabar_rejecteddata
-{
-
-# Grabar en el log “Batch Nº xxx ($nBatch) grabado en cierre de lote"
-#$BINDIR./glog.sh "proc" "Batch Nº: $nBatch grabado en cierre de lote"
 
 }
 
