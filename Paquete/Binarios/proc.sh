@@ -73,10 +73,12 @@ return -1
 function validar_Repetido
 {
 
+temp1="${archivo##*/}"
 
-for file in "$aceptados/"*.csv;
+for file in "$procesados/"*.csv;
 	do
-		if [[ $archivo == $file ]];
+		temp2="${file##*/}"
+		if [[ "$temp1" == "$temp2" ]];
 		then
 			# Grabar en log que se rechaza el $nombreArchivo por que esta duplicado
 			#$BINDIR./glog.sh "proc" "Se rechaza el $nombreArchivo por estar duplicado"
@@ -110,6 +112,7 @@ return -1
 function validar_Merchant_Code
 {
 
+#codigosComercios="$maestro/CodigosComercios.csv"
 codigosComercios="$(find . -iname "CodigosComercios.csv")"
 
 while IFS=',' read comercio estado
@@ -181,6 +184,7 @@ do
 		fi
 	done < "$file"
 	#$BINDIR./glog.sh "proc" "$nombreArchivo tiene $CANTREGISTROS cantidad de registros"
+	mv $file $procesados
 done
 return 0
 
@@ -189,6 +193,8 @@ return 0
 function registro_es_apto
 {
 
+
+#estructuraNovedades="$maestro/EstructuraNovedades.csv"
 estructuraNovedades="$(find . -iname "EstructuraNovedades.csv")"
 
 while IFS=',' read col1 col2 col3 col4 col5 col6 col7 col8 col9 col10 col11 col12 col13 col14 col15
@@ -207,6 +213,7 @@ done < "$estructuraNovedades"
 function obtener_cResponseCodeShortDescription
 {
 
+#codigos_Respuestas_Gateway="$maestro/Codigos_Respuestas_Gateway.csv"
 codigos_Respuestas_Gateway="$(find . -iname "Codigos_Respuestas_Gateway.csv")"
 
 while IFS='		' read iso09_ResponseCode shortDescription longDescription
@@ -280,8 +287,7 @@ novedades="$maestro/Paquete/Novedades" #"$DIRNOV"
 aceptados="$maestro/Aceptados" #"$DIROK"
 rechazados="$maestro/Rechazados" #"$DIRNOK"
 salida="$maestro/Salida" #"$DIROUT"
-
-#touch "$DIRNOK/rejecteddata.csv"
+procesados="$maestro/Procesados" #"DIRPROC"
 
 #$BINDIR./glog.sh "proc" "Procesando... "
 function finalizar_proceso {
@@ -316,6 +322,7 @@ do
      	else
          	echo "Nada por procesar"
          	#$BINDIR./glog.sh "proc" "No hay archivos en $novedades..."
+         	break
      	fi
 		
 	done
