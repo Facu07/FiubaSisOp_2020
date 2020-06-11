@@ -12,14 +12,14 @@ then
 			return 0									#Existe y no esta vacío && Existe y puede leerse 
 		fi
 		# Grabar en el log el nombre del archivo rechazado. Motivo: No es un archivo normal
-		#$BINDIR./glog.sh "proc" "$nombreArchivo rechazado. Motivo: No es un archivo normal"
+		./glog.sh "proc" "$nombreArchivo rechazado. Motivo: No es un archivo normal"
 	fi
 	# Grabar en el log el nombre del archivo rechazado. Motivo: No es legible
-	#$BINDIR./glog.sh "proc" "$nombreArchivo rechazado. Motivo: No es legible"
+	./glog.sh "proc" "$nombreArchivo rechazado. Motivo: No es legible"
 	return -1
 fi
 # Grabar en el log el nombre del archivo rechazado. Motivo: Archivo vacio
-#$BINDIR./glog.sh "proc" "$nombreArchivo rechazado. Motivo: Archivo vacio"
+./glog.sh "proc" "$nombreArchivo rechazado. Motivo: Archivo vacio"
 return -1
 
 }
@@ -32,7 +32,7 @@ then
 	# mes valido
 	return 0
 fi
-#$BINDIR./glog.sh "proc" "$nombreArchivo rechazado. Motivo: $mm No es un mes valido"
+./glog.sh "proc" "$nombreArchivo rechazado. Motivo: $mm No es un mes valido"
 return -1
 
 }
@@ -63,7 +63,7 @@ case $mm in
   ;;
  *)
 	# dia no valido
-	#$BINDIR./glog.sh "proc" "$nombreArchivo rechazado. Motivo: $dd No es un dia valido"
+	./glog.sh "proc" "$nombreArchivo rechazado. Motivo: $dd No es un dia valido"
 	return -1
 esac
 return -1
@@ -81,7 +81,7 @@ for file in "$procesados/"*.csv;
 		if [[ "$temp1" == "$temp2" ]];
 		then
 			# Grabar en log que se rechaza el $nombreArchivo por que esta duplicado
-			#$BINDIR./glog.sh "proc" "Se rechaza el $nombreArchivo por estar duplicado"
+			./glog.sh "proc" "Se rechaza el $nombreArchivo por estar duplicado"
 			return -1 
 		fi
 	done
@@ -92,7 +92,7 @@ return 0
 function validar_State_Code
 {
 
-codigosProvincias="$(find . -iname "CodigosProvincias.csv")"
+codigosProvincias="$maestro/CodigosProvincias.csv"
 
 while IFS=',' read name code
 do
@@ -104,7 +104,7 @@ do
 	fi
 done < "$codigosProvincias"
 
-#$BINDIR./glog.sh "proc" "Se rechaza el $nombreArchivo por tener un codigo de provincia no valido"
+./glog.sh "proc" "Se rechaza el $nombreArchivo por tener un codigo de provincia no valido"
 return -1
 
 }
@@ -112,8 +112,7 @@ return -1
 function validar_Merchant_Code
 {
 
-#codigosComercios="$maestro/CodigosComercios.csv"
-codigosComercios="$(find . -iname "CodigosComercios.csv")"
+codigosComercios="$maestro/CodigosComercios.csv"
 
 while IFS=',' read comercio estado
 do
@@ -127,7 +126,7 @@ do
 	fi
 done < "$codigosComercios"
 
-#$BINDIR./glog.sh "proc" "Se rechaza el $nombreArchivo por tener un codigo de comercio no valido"
+./glog.sh "proc" "Se rechaza el $nombreArchivo por tener un codigo de comercio no valido"
 return -1
 
 }
@@ -168,7 +167,7 @@ do
 	CANTREGISTROS=0
 	if [ ! "$(ls $aceptados/)" ]
     then
-    	#$BINDIR./glog.sh "proc" "No hay archivos en $aceptados..."
+    	./glog.sh "proc" "No hay archivos en $aceptados..."
     	echo "Se proceso todo en $aceptados"
     	return 0
     fi  
@@ -183,7 +182,7 @@ do
 			echo -e "$idTransaction,$cProcessingCode,$nTransactionAmount,$cSystemTrace,$cLocalTransactionTime,$cRetrievalReferenceNumber,$cAuthorizationResponse,$cResponseCode,$installments,$hostResponse,$cTicketNumber,$batchNumber,$cGuid,$cMessageType,$cMessageType_Response,Registro: $CANTREGISTROS no cumple con la estrucutra,$nombreArchivo" >> "$rechazados/rejectedData.csv"
 		fi
 	done < "$file"
-	#$BINDIR./glog.sh "proc" "$nombreArchivo tiene $CANTREGISTROS cantidad de registros"
+	./glog.sh "proc" "$nombreArchivo tiene $CANTREGISTROS cantidad de registros"
 	mv $file $procesados
 done
 return 0
@@ -194,8 +193,7 @@ function registro_es_apto
 {
 
 
-#estructuraNovedades="$maestro/EstructuraNovedades.csv"
-estructuraNovedades="$(find . -iname "EstructuraNovedades.csv")"
+estructuraNovedades="$maestro/EstructuraNovedades.csv"
 
 while IFS=',' read col1 col2 col3 col4 col5 col6 col7 col8 col9 col10 col11 col12 col13 col14 col15
 do
@@ -213,8 +211,7 @@ done < "$estructuraNovedades"
 function obtener_cResponseCodeShortDescription
 {
 
-#codigos_Respuestas_Gateway="$maestro/Codigos_Respuestas_Gateway.csv"
-codigos_Respuestas_Gateway="$(find . -iname "Codigos_Respuestas_Gateway.csv")"
+codigos_Respuestas_Gateway="$maestro/Codigos_Respuestas_Gateway.csv"
 
 while IFS='		' read iso09_ResponseCode shortDescription longDescription
 do
@@ -282,14 +279,22 @@ unset isO04_cTransactionAmount
 CICLO=0
 PROCESO_ACTIVO=true
 
-maestro=${PWD} #"$DIRMAE"
-novedades="$maestro/Paquete/Novedades" #"$DIRNOV"
-aceptados="$maestro/Aceptados" #"$DIROK"
-rechazados="$maestro/Rechazados" #"$DIRNOK"
-salida="$maestro/Salida" #"$DIROUT"
-procesados="$maestro/Procesados" #"DIRPROC"
+maestro="$DIRMAE"
+novedades="$DIRNOVE"
+aceptados="$DIROK"
+rechazados="$DIRNOK"
+salida="$DIROUT"
+procesados="$DIRPROC"
+binarios="$DIRBIN"
 
-#$BINDIR./glog.sh "proc" "Procesando... "
+echo "$novedades"
+echo "$aceptados"
+echo "$rechazados"
+echo "$salida"
+echo "$procesados"
+echo "$binarios"
+
+./glog.sh "proc" "Procesando... "
 function finalizar_proceso {
    let PROCESO_ACTIVO=false
 }
@@ -315,13 +320,13 @@ do
 			then	
 				mv $archivo $aceptados					# Mueve a la carpeta de aceptados
 				# Grabar en el log el nombre del archivo aceptado
-				#$BINDIR./glog.sh "proc" "Archivo $archivo aceptado"
+				./glog.sh "proc" "Archivo $archivo aceptado"
 			else
 				mv $archivo $rechazados					# Mueve a la carpeta de rechazados
 			fi
      	else
          	echo "Nada por procesar"
-         	#$BINDIR./glog.sh "proc" "No hay archivos en $novedades..."
+         	./glog.sh "proc" "No hay archivos en $novedades..."
          	break
      	fi
 		
@@ -335,12 +340,12 @@ do
 	sleep 10
 
 	#loggear el CICLO en el que voy
-	#$BINDIR./glog.sh "proc" "Ciclo Nº: $CICLO"
+	./glog.sh "proc" "Ciclo Nº: $CICLO"
 
 done
 
 PID_PROCESO=`ps -a | grep proc.sh | awk '{print $1}'`
-#$BINDIR./glog.sh "proc" "Programa finalizado con pid: $PID_PROCESO"
+./glog.sh "proc" "Programa finalizado con pid: $PID_PROCESO"
 
 exit 0
 
