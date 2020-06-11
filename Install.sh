@@ -1,8 +1,8 @@
 #!/bin/bash
 
-GRUPO=${PWD}/grupo04
-DIRCONF=grupo04/conf
-DIRLOG=grupo04/conf/log
+GRUPO=${PWD}/grupo02
+DIRCONF=grupo02/conf
+DIRLOG=grupo02/conf/log
 DIRLOGBIN=Paquete/Binarios
 if [[ $1 = "-r" ]]; then
 	ISREPAIR="YES"
@@ -14,7 +14,7 @@ main() {
 	export GRUPO
 
 	if ! [[ $ISREPAIR = "YES" ]]; then
-		if [ -d grupo04 ]; then
+		if [ -d grupo02 ]; then
 			echo "is installed"
 			necesitaRepararse="$(necesitaRepararse)"
 			if [[ $necesitaRepararse = "si" ]]; then
@@ -25,13 +25,13 @@ main() {
 				mostrarDirectoriosElegidos
 			fi
 		fi
-		if ! [ -d grupo04 ]; then
+		if ! [ -d grupo02 ]; then
 			instalarPrograma
 		fi
 	fi
 
 	if [[ $ISREPAIR = "YES" ]]; then
-		if [ -d grupo04 ]; then
+		if [ -d grupo02 ]; then
 			necesitaRepararse="$(necesitaRepararse)"
 			if [[ $necesitaRepararse = "si" ]]; then
 				repararPrograma
@@ -41,7 +41,7 @@ main() {
 				mostrarDirectoriosElegidos
 			fi
 		fi
-		if ! [ -d grupo04 ]; then
+		if ! [ -d grupo02 ]; then
 			instalarPrograma
 		fi
 	fi
@@ -50,7 +50,7 @@ main() {
 
 instalarPrograma() {
 	setearDirectoriosPorDefecto
-	mkdir -m 777 grupo04
+	mkdir -m 777 grupo02
 	mkdir -m 777 $DIRCONF
 	mkdir -m 777 $DIRLOG
 	verificarPermisosLogueo $DIRLOG/Install.log
@@ -79,12 +79,11 @@ instalarPrograma() {
 setearDirectoriosPorDefecto() {
 	DIRBIN=bin #a-El directorio de ejecutables
 	DIRMAE=mae #b-El directorio de archivos maestros
-	DIRNOV=nov #c-El directorio de arribo de archivos externos
+	DIRNOVE=nove #c-El directorio de arribo de archivos externos
 	DIROK=ok #d-El directorio donde se depositan temporalmente los aceptados para que luego se procesen
 	DIRNOK=nok #e-El directorio donde se depositan todos los archivos rechazados
 	DIRPROC=proc #f-El directorio donde se depositan los archivos ya procesados
 	DIROUT=out #g-El directorio donde se depositan los archivos de salida
-	#DIRTRANS=trans #c-El directorio donde se depositan las transacciones procesadass
 
 	CONFIRMO_DIRECTORIOS=NO
 }
@@ -116,7 +115,7 @@ loguearDirectoriosPorDefecto(){
 	loguear "Directorio por defecto de Configuración: $DIRCONF " "INFO" #0
 	loguear "Directorio por defecto de Ejecutables: $DIRBIN " "INFO" #a
 	loguear "Directorio por defecto de Maestros y Tablas: $DIRMAE " "INFO" #b
-	loguear "Directorio por defecto de Recepcion de Novedades: $DIRNOV " "INFO" #c
+	loguear "Directorio por defecto de Recepcion de Novedades: $DIRNOVE " "INFO" #c
 	loguear "Directorio por defecto de Archivos s: $DIROK " "INFO" #d
 	loguear "Directorio por defecto de Archivos Rechazados: $DIRNOK " "INFO" #e
 	loguear "Directorio por defecto de Archivos Procesados: $DIRPROC " "INFO" #f
@@ -139,10 +138,10 @@ function elegirDirectorios() {
 	directorios+=("$DIRMAE")
 	loguear "El usuario eligio el nombre $DIRMAE para el directorio de maestros y tablas" "INFO"
 	#c
-	echo "Defina el directorio de recepción de novedades ($DIRNOV): "
-	setearDirectorio DIRNOV
-	directorios+=("$DIRNOV")
-	loguear "El usuario eligio el nombre $DIRNOV para el directorio de recepcion de novedades" "INFO"
+	echo "Defina el directorio de recepción de novedades ($DIRNOVE): "
+	setearDirectorio DIRNOVE
+	directorios+=("$DIRNOVE")
+	loguear "El usuario eligio el nombre $DIRNOVE para el directorio de recepcion de novedades" "INFO"
 	#d
 	echo "Defina el directorio de Archivos Aceptados ($DIROK): "
 	setearDirectorio DIROK
@@ -208,7 +207,7 @@ function mostrarDirectoriosElegidos() {
 	echo "Directorio elegido para los ejecutables: $DIRBIN"
 	echo "Directorio elegido para Archivos Maestros: $DIRMAE"
 	echo "Directorio elegido para Archivos Temporalmente Aceptados: $DIROK"
-	echo "Directorio elegido para Recepcion de Novedades: $DIRNOV"	
+	echo "Directorio elegido para Recepcion de Novedades: $DIRNOVE"	
 	echo "Directorio elegido para Archivos Rechazados: $DIRNOK"
 	echo "Directorio elegido para Archivos Procesados: $DIRPROC"
 	echo "Directorio elegido para Archivos de Salida: $DIROUT"
@@ -241,7 +240,7 @@ function grabarConfig() {
 DIRCONF-$GRUPO/conf/-$USER-$(date '+%Y-%m-%d %H:%M:%S')
 DIRBIN-$GRUPO/$DIRBIN-$USER-$(date '+%Y-%m-%d %H:%M:%S')
 DIRMAE-$GRUPO/$DIRMAE-$USER-$(date '+%Y-%m-%d %H:%M:%S')
-DIRNOV-$GRUPO/$DIRNOV-$USER-$(date '+%Y-%m-%d %H:%M:%S')
+DIRNOVE-$GRUPO/$DIRNOVE-$USER-$(date '+%Y-%m-%d %H:%M:%S')
 DIROK-$GRUPO/$DIROK-$USER-$(date '+%Y-%m-%d %H:%M:%S')
 DIRNOK-$GRUPO/$DIRNOK-$USER-$(date '+%Y-%m-%d %H:%M:%S')
 DIRPROC-$GRUPO/$DIRPROC-$USER-$(date '+%Y-%m-%d %H:%M:%S')
@@ -262,9 +261,6 @@ function creardirectorios() {
 
 	loguear "Directorio elegido para Archivos Maestros: $(obtenerVariable DIRMAE)" "INFO"
 
-	#loguear "Directorio elegido para Recepcion de Transacciones: $(obtenerVariable DIRTRANS)" "INFO"
-	#mkdir -p "$(obtenerVariable DIRTRANS)"
-
 	loguear "Directorio elegido para Archivos Aceptados: $(obtenerVariable DIROK)" "INFO"
 	mkdir -p "$(obtenerVariable DIROK)"
 
@@ -277,18 +273,16 @@ function creardirectorios() {
 	loguear "Directorio elegido para Archivos Procesados: $(obtenerVariable DIRPROC)" "INFO"
 	mkdir -p "$(obtenerVariable DIRPROC)"
 
-	#loguear "Directorio elegido para Transacciones Procesadas: $(obtenerVariable DIRTRANS)" "INFO"
-	#mkdir -p "$(obtenerVariable DIRTRANS)"
-
-	loguear "Directorio elegido para Recepcion de Novedades: $(obtenerVariable DIRNOV)" "INFO"
-	mkdir -p "$(obtenerVariable DIRNOV)"
-	cp -R Paquete/Novedades/*.csv "$(obtenerVariable DIRNOV)"
+	loguear "Directorio elegido para Recepcion de Novedades: $(obtenerVariable DIRNOVE)" "INFO"
+	mkdir -p "$(obtenerVariable DIRNOVE)"
+	cp -R Paquete/Novedades/*.csv "$(obtenerVariable DIRNOVE)"
 
 	loguear "Grabando Archivos Maestros: $(obtenerVariable DIRMAE)" "INFO"
 	mkdir -p "$(obtenerVariable DIRMAE)"
 	cp -R Paquete/CodigosComercios.csv "$(obtenerVariable DIRMAE)"
 	cp -R Paquete/CodigosProvincias.csv "$(obtenerVariable DIRMAE)"
 	cp -R Paquete/Codigos_Respuestas_Gateway.csv "$(obtenerVariable DIRMAE)"
+	cp -R Paquete/EstructuraNovedades.csv "$(obtenerVariable DIRMAE)"
 
 	loguear "Grabando Archivos Ejecutables: $(obtenerVariable DIRBIN)" "INFO"
 	cp -R Paquete/Binarios "$(obtenerVariable DIRBIN)"
@@ -296,10 +290,10 @@ function creardirectorios() {
 }
 
 function necesitaRepararse() {
-	if [[ -d "$(obtenerVariable DIRNOV)"  &&  -d "$(obtenerVariable DIROK)"  &&  -d "$(obtenerVariable DIRNOK)"  &&  -d "$(obtenerVariable DIROUT)"  &&  -d "$(obtenerVariable DIRPROC)"  &&   -d "$(obtenerVariable DIRMAE)"  &&   -d "$(obtenerVariable DIRBIN)" ]]; then
+	if [[ -d "$(obtenerVariable DIRNOVE)"  &&  -d "$(obtenerVariable DIROK)"  &&  -d "$(obtenerVariable DIRNOK)"  &&  -d "$(obtenerVariable DIROUT)"  &&  -d "$(obtenerVariable DIRPROC)"  &&   -d "$(obtenerVariable DIRMAE)"  &&   -d "$(obtenerVariable DIRBIN)" ]]; then
 		echo "no"
 	fi
-	if ! [[ -d "$(obtenerVariable DIRNOV)"  && -d "$(obtenerVariable DIROK)"  &&  -d "$(obtenerVariable DIRNOK)"  &&  -d "$(obtenerVariable DIROUT)"  &&  -d "$(obtenerVariable DIRPROC)"  &&   -d "$(obtenerVariable DIRMAE)"  &&   -d "$(obtenerVariable DIRBIN)" ]]; then
+	if ! [[ -d "$(obtenerVariable DIRNOVE)"  && -d "$(obtenerVariable DIROK)"  &&  -d "$(obtenerVariable DIRNOK)"  &&  -d "$(obtenerVariable DIROUT)"  &&  -d "$(obtenerVariable DIRPROC)"  &&   -d "$(obtenerVariable DIRMAE)"  &&   -d "$(obtenerVariable DIRBIN)" ]]; then
 		echo "si"
 	fi
 }
@@ -311,7 +305,7 @@ function repararPrograma() {
 }
 
 eliminarProgramaInstalado () {
-	rm -rf grupo04
+	rm -rf grupo02
 }
 
 obtenerVariable(){
