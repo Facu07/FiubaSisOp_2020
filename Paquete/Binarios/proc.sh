@@ -12,13 +12,16 @@ then
 			return 0									#Existe y no esta vacío && Existe y puede leerse 
 		fi
 		# Grabar en el log el nombre del archivo rechazado. Motivo: No es un archivo normal
+		echo "$nombreArchivo rechazado. Motivo: No es un archivo normal"
 		./glog.sh "proc" "$nombreArchivo rechazado. Motivo: No es un archivo normal"
 	fi
 	# Grabar en el log el nombre del archivo rechazado. Motivo: No es legible
+	echo "$nombreArchivo rechazado. Motivo: No es legible"
 	./glog.sh "proc" "$nombreArchivo rechazado. Motivo: No es legible"
 	return -1
 fi
 # Grabar en el log el nombre del archivo rechazado. Motivo: Archivo vacio
+echo "$nombreArchivo rechazado. Motivo: Archivo vacio"
 ./glog.sh "proc" "$nombreArchivo rechazado. Motivo: Archivo vacio"
 return -1
 
@@ -27,11 +30,12 @@ return -1
 function validar_Mes
 {
 
-if [[ "$mm" < "13" ]] && [[ "$mm" > "01" ]]					# valido q el mes este entre 12 y 1
+if [[ $mm -lt 13 ]] && [[ $mm -gt 0 ]]					# valido q el mes este entre 12 y 1
 then
 	# mes valido
 	return 0
 fi
+echo "$nombreArchivo rechazado. Motivo: $mm No es un mes valido"
 ./glog.sh "proc" "$nombreArchivo rechazado. Motivo: $mm No es un mes valido"
 return -1
 
@@ -41,21 +45,21 @@ function validar_Dias_del_Mes
 {
 case $mm in
 '02')
-  if [[ "$dd" < "29" ]] && [[ "$dd" > "01" ]]					# valido q el dia sea de 29
+  if [[ $dd -lt 30 ]] && [[ $dd -gt 0 ]]					# valido q el dia sea de 29
 	then
 		#mes febrero
 		return 0
 	fi
   ;;
-'01' | '03' | '05' | '07' | '09' | '11')
-    if [[ "$dd" < "31" ]] && [[ "$dd" > "01" ]]					# valido q el dia sea de 31
+'01' | '03' | '05' | '07' | '08' | '09' | '10' | '12')
+    if [[ $dd -lt 32 ]] && [[ $dd -gt 0 ]]					# valido q el dia sea de 31
 	then
 		# mes valido de 31 dias
 		return 0
 	fi
   ;;
-'04' | '06' | '08' | '10' | '12')
-    if [[ "$dd" < "30" ]] && [[ "$dd" > "01" ]]					# valido q el dia sea de 30
+'04' | '06' | '09' | '11')
+    if [[ $dd -lt 31 ]] && [[ $dd -gt 0 ]]					# valido q el dia sea de 30
 	then
 		# mes valido de 30 dias
 		return 0
@@ -63,6 +67,7 @@ case $mm in
   ;;
  *)
 	# dia no valido
+	echo "$nombreArchivo rechazado. Motivo: $dd No es un dia valido"
 	./glog.sh "proc" "$nombreArchivo rechazado. Motivo: $dd No es un dia valido"
 	return -1
 esac
@@ -81,6 +86,7 @@ for file in "$procesados/"*.csv;
 		if [[ "$temp1" == "$temp2" ]];
 		then
 			# Grabar en log que se rechaza el $nombreArchivo por que esta duplicado
+			echo "Se rechaza el $nombreArchivo por estar duplicado"
 			./glog.sh "proc" "Se rechaza el $nombreArchivo por estar duplicado"
 			return -1 
 		fi
@@ -224,13 +230,70 @@ done < "$codigos_Respuestas_Gateway"
 
 }
 
-function procesarSalida
+function validarNombreArchivoSalida
 {
 
 merchantCode="${nombreArchivo:7:8}"
-mmdd="${nombreArchivo:0:4}"
+mm="${nombreArchivo:0:2}"
+dd="${nombreArchivo:2:2}"
 stateCode="${nombreArchivo:5:1}"
-nombreArchivoSalida="$merchantCode-$mmdd"
+transactionTime=$(cut -d'"' -f4 <<<$cLocalTransactionTime)
+
+if [[ $transactionTime > $HORACIERRE ]]
+then
+	case $mm in
+		'02')
+		  if [[ $dd -eq 29 ]]
+			then
+				let mm=mm+1
+				dd=01
+			else
+				let dd=dd+1
+			fi
+		  ;;
+		'01' | '03' | '05' | '07' | '09' | '11')
+		    if [[ $dd -eq 31 ]]
+		    then
+				let mm=mm+1
+				dd=01
+			else
+				let dd=dd+1
+			fi
+		  ;;
+		'04' | '06' | '08' | '10')
+		    if [[ $dd -eq 30 ]]
+			then
+				let mm=mm+1
+				dd=01
+			else
+				let dd=dd+1
+			fi
+		  ;;
+		  '12')
+ 			if [[ $dd -eq 31 ]]
+		    then
+		    	mm=01
+		    	dd=01
+		    else
+		    	let dd=dd+1
+		    fi
+		   ;;
+		 *)
+	esac
+	mm=$(printf %02d  $((mm%100)))
+	dd=$(printf %02d  $((dd%100)))
+fi
+
+nombreArchivoSalida="$merchantCode-$mm$dd"
+return 0
+
+}
+
+function procesarSalida
+{
+
+validarNombreArchivoSalida
+
 cOriginalFile="\"cOriginalFile\": \"${merchantCode%.csv*}\""
 
 validar_State_Code
@@ -244,11 +307,13 @@ obtener_cResponseCodeShortDescription
 
 isO42_cMerchantCode="\"isO42_cMerchantCode\": \"$merchantCode\""
 isO49_cTransactionCurrencyCode="\"isO49_cTransactionCurrencyCode\": \"032\""
-if [[ ${nTransactionAmount:28:1} = 0 ]]
+nTransactionAmount=$(cut -d':' -f2 <<<$nTransactionAmount)
+nTransactionAmount=$(cut -d' ' -f2 <<<$nTransactionAmount)
+if [[ $nTransactionAmount = 0 ]]
 then
 	isO04_cTransactionAmount="\"isO04_cTransactionAmount\": \"000000000000\""
 else
-	isO04_cTransactionAmount="\"isO04_cTransactionAmount\": \"00000000${nTransactionAmount:28:4}\""
+	isO04_cTransactionAmount="\"isO04_cTransactionAmount\": \"00000000$nTransactionAmount\""
 fi
 
 echo -e "$cOriginalFile,$isO05_cStateName,$isO05_cStateCode,$isO07_cTransmissionDateTime,$isO13_cLocalTransactionDate,$isO15_cResponseCodeShortDescription,$isO42_cMerchantCode,$isO49_cTransactionCurrencyCode,$isO04_cTransactionAmount" >> "$salida/$nombreArchivoSalida.csv"
@@ -286,13 +351,8 @@ rechazados="$DIRNOK"
 salida="$DIROUT"
 procesados="$DIRPROC"
 binarios="$DIRBIN"
+horaCierre="$HORACIERRE"
 
-echo "$novedades"
-echo "$aceptados"
-echo "$rechazados"
-echo "$salida"
-echo "$procesados"
-echo "$binarios"
 
 ./glog.sh "proc" "Procesando... "
 function finalizar_proceso {
@@ -323,6 +383,7 @@ do
 				./glog.sh "proc" "Archivo $archivo aceptado"
 			else
 				mv $archivo $rechazados					# Mueve a la carpeta de rechazados
+				./glog.sh "proc" "Archivo $archivo rechazado"
 			fi
      	else
          	echo "Nada por procesar"

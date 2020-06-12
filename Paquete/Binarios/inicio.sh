@@ -23,6 +23,7 @@
 #	DIROK:		Directorio de Archivos de Aceptados
 #	DIRCONF: 	Directorio de configuracion - GRUPO04/conf
 #	DIRLOG: 	Directorio de archivos de LOG - GRUPO04/conf/log
+#	HORACIERRE:	Horario de Cierre de Archivos
 
 
 
@@ -38,6 +39,7 @@ DIROUT=""
 DIROK=""
 DIRCONF=""
 DIRLOG=""
+HORACIERRE=""
 
 
 #
@@ -111,6 +113,7 @@ unsetVars()
 	unset DIRNOK
 	unset DIRPROC
 	unset DIROUT
+	unset HORACIERRE
 }
 
 
@@ -127,9 +130,6 @@ readTpconfig()
 		VARIABLE=$(cut -d'-' -f1 <<<$REGISTRO)
 		VALOR=$(cut -d'-' -f2 <<<$REGISTRO)
 
-		#echo $VARIABLE
-		#echo $VALOR
-
 		NOMBRECORRECTO="YES"
 
 		#tengo que chequear que todas las variables esten inicializadas....
@@ -137,9 +137,15 @@ readTpconfig()
 
 		if [ ! -d "$VALOR" ]	
 		then
-			echo "Cargando variable $VARIABLE y ruta $VALOR... ERROR - RUTA INEXISTENTE"
-			./glog.sh "inicio" "Cargando variable $VARIABLE y ruta $VALOR... ERROR - RUTA INEXISTENTE"
-			ALLDIREXISTS="NO"
+			if [ "$VARIABLE" != "HORACIERRE" ]
+			then
+				echo "Cargando variable $VARIABLE y ruta $VALOR... ERROR - RUTA INEXISTENTE"
+				./glog.sh "inicio" "Cargando variable $VARIABLE y ruta $VALOR... ERROR - RUTA INEXISTENTE"
+				ALLDIREXISTS="NO"
+			else
+				HORACIERRE="$VALOR"
+				VARCOUNT=$((VARCOUNT+1))
+			fi
  		else
 			case $VARIABLE in
 				"GRUPO")
@@ -246,6 +252,7 @@ exportarVariables()
 	export DIRNOK
 	export DIRPROC
 	export DIROUT
+	export HORACIERRE
 
 	echo "Sistema inicializado con éxito. Se procede con la invocación del comando start para iniciar el proceso en segundo plano"
 	echo "====================== INICIALIZACION COMPLETADA CON EXITO ======================"
@@ -264,7 +271,7 @@ activarProceso()
 		./start.sh &
 
 		PID=$(ps | grep "start.sh" | cut -d' ' -f1)
-		echo "============ Se inicia start.sh ID:$PID============"
+		echo "============ Se inicia start.sh ID:$PID ============"
 		./glog.sh "inicio" "INFO: ============ Se inicia start.sh ID:$PID============"
 	fi
 }
@@ -345,16 +352,16 @@ init()
 	fi
 
 	#verificarTotalVar
-	if [ "$VARCOUNT" != "10" ]
+	if [ "$VARCOUNT" != "11" ]
 	then
-		echo "Verificando cantidad esperada (10) y nombres de variables esperadas... ERROR"
-		./glog.sh "inicio" "Verificando cantidad esperada (10) y nombres de variables esperadas." "ERROR"
+		echo "Verificando cantidad esperada (11) y nombres de variables esperadas... ERROR"
+		./glog.sh "inicio" "Verificando cantidad esperada (11) y nombres de variables esperadas." "ERROR"
 		#inicializacionAbortadaMsj
 		#unsetVars
 		return 0
 	else
-		echo "Verificando cantidad esperada (10) y nombres de variables esperadas... OK"
-		./glog.sh "inicio" "Verificando cantidad esperada (10) y nombres de variables esperadas... OK"
+		echo "Verificando cantidad esperada (11) y nombres de variables esperadas... OK"
+		./glog.sh "inicio" "Verificando cantidad esperada (11) y nombres de variables esperadas... OK"
 	fi
 
 	#verificarMaePermisos
