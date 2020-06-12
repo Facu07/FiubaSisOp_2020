@@ -4,6 +4,7 @@ GRUPO=${PWD}/grupo02
 DIRCONF=grupo02/conf
 DIRLOG=grupo02/conf/log
 DIRLOGBIN=Paquete/Binarios
+HORACIERRE=180000
 if [[ $1 = "-r" ]]; then
 	ISREPAIR="YES"
 fi
@@ -120,7 +121,6 @@ loguearDirectoriosPorDefecto(){
 	loguear "Directorio por defecto de Archivos Rechazados: $DIRNOK " "INFO" #e
 	loguear "Directorio por defecto de Archivos Procesados: $DIRPROC " "INFO" #f
 	loguear "Directorio por defecto de Archivos de Salida: $DIROUT " "INFO" #g
-	#loguear "Directorio por defecto de Transacciones Procesadas: $DIRTRANS " "INFO" #h
 
 }
 
@@ -162,11 +162,29 @@ function elegirDirectorios() {
 	setearDirectorio DIROUT
 	directorios+=("$DIROUT")
 	loguear "El usuario eligio el nombre $DIROUT para el directorio de archivos de salida" "INFO"
-	#echo "Defina el directorio de Recepción de Transacciones ($DIRTRANS): "
+	echo "Defina el Horario de Cierre ($HORACIERRE): "
+	setearHoraCierre HORACIERRE
 	#h
-	#setearDirectorio DIRTRANS
-	#directorios+=("$DIRTRANS")
-	#loguear "El usuario eligio el nombre $DIRTRANS para el directorio de recepcion de transacciones" "INFO"
+	loguear "El usuario eligio como Hora de Cierre $HORACIERRE" "INFO"
+}
+
+function setearHoraCierre(){
+	read respuesta
+	if [[ $respuesta = "" ]] || ! esHoraValida "$respuesta"; then
+		return 0
+	fi
+	eval "$1=$respuesta"
+}
+
+function esHoraValida(){
+	if [[ $1 -gt 245959 ]] || [[ 100000 -gt $1 ]]
+	then
+		loguear "Intento de utilizar el horario $1 que no es una hora válida" "WAR"
+		echo "$1 no es un horario válido."
+		return 1	#es invalido
+	fi
+
+	return 0
 }
 
 function setearDirectorio(){
@@ -211,7 +229,7 @@ function mostrarDirectoriosElegidos() {
 	echo "Directorio elegido para Archivos Rechazados: $DIRNOK"
 	echo "Directorio elegido para Archivos Procesados: $DIRPROC"
 	echo "Directorio elegido para Archivos de Salida: $DIROUT"
-	#echo "Directorio elegido para Transacciones Procesadas: $DIRTRANS"
+	echo "Horario de Cierre elegido: $HORACIERRE"
 }
 
 function confirmarInstalacion() {
@@ -245,7 +263,8 @@ DIROK-$GRUPO/$DIROK-$USER-$(date '+%Y-%m-%d %H:%M:%S')
 DIRNOK-$GRUPO/$DIRNOK-$USER-$(date '+%Y-%m-%d %H:%M:%S')
 DIRPROC-$GRUPO/$DIRPROC-$USER-$(date '+%Y-%m-%d %H:%M:%S')
 DIROUT-$GRUPO/$DIROUT-$USER-$(date '+%Y-%m-%d %H:%M:%S')
-DIRLOG-$GRUPO/conf/log/-$USER-$(date '+%Y-%m-%d %H:%M:%S')" > $DIRCONF/tpconfig.txt
+DIRLOG-$GRUPO/conf/log/-$USER-$(date '+%Y-%m-%d %H:%M:%S')
+HORACIERRE-$HORACIERRE-$USER-$(date '+%Y-%m-%d %H:%M:%S')" > $DIRCONF/tpconfig.txt
 }
 
 function creardirectorios() {
