@@ -189,6 +189,7 @@ do
 		fi
 	done < "$file"
 	./glog.sh "proc" "$nombreArchivo tiene $CANTREGISTROS cantidad de registros"
+	./glog.sh "proc" "$nombreArchivo fue procesado y se lo mueve a la carpeta $procesados"
 	mv $file $procesados
 done
 return 0
@@ -218,15 +219,20 @@ function obtener_cResponseCodeShortDescription
 {
 
 codigos_Respuestas_Gateway="$maestro/Codigos_Respuestas_Gateway.csv"
+iso09_ResponseCodeAux=$(cut -d':' -f2 <<<$iso09_ResponseCode)
+echo "$iso09_ResponseCodeAux"
 
 while IFS='		' read iso09_ResponseCode shortDescription longDescription
 do
-	if [[ $cResponseCode = *$iso09_ResponseCode* ]]
+	if [[ $cResponseCode = $iso09_ResponseCodeAux ]]
 	then
 		isO15_cResponseCodeShortDescription="\"isO15_cResponseCodeShortDescription\": \"$shortDescription\""
 		return 0
 	fi
 done < "$codigos_Respuestas_Gateway"
+
+isO15_cResponseCodeShortDescription="\"isO15_cResponseCodeShortDescription\": \"ERROR NO ESPECIFICADO\""
+echo "$isO15_cResponseCodeShortDescription"
 
 }
 
@@ -316,7 +322,7 @@ else
 	isO04_cTransactionAmount="\"isO04_cTransactionAmount\": \"00000000$nTransactionAmount\""
 fi
 
-echo -e "$cOriginalFile,$isO05_cStateName,$isO05_cStateCode,$isO07_cTransmissionDateTime,$isO13_cLocalTransactionDate,$isO15_cResponseCodeShortDescription,$isO42_cMerchantCode,$isO49_cTransactionCurrencyCode,$isO04_cTransactionAmount" >> "$salida/$nombreArchivoSalida.csv"
+echo -e "$cOriginalFile,$isO05_cStateName,$isO05_cStateCode,$isO07_cTransmissionDateTime,$isO13_cLocalTransactionDate,$isO15_cResponseCodeShortDescription,$isO42_cMerchantCode,$isO49_cTransactionCurrencyCode,$idTransaction,$cProcessingCode,$isO04_cTransactionAmount,$cSystemTrace,$cLocalTransactionTime,$cRetrievalReferenceNumber,$cAuthorizationResponse,$cResponseCode,$installments,$hostResponse,$cTicketNumber,$batchNumber,$cGuid,$cMessageType,$cMessageType_Response" >> "$salida/$nombreArchivoSalida.csv"
 
 unset merchantCode
 unset mmdd
@@ -359,15 +365,17 @@ function finalizar_proceso {
    let PROCESO_ACTIVO=false
 }
 
-
 trap finalizar_proceso SIGINT SIGTERM
 
 
-while [ $PROCESO_ACTIVO = true ]
+while [ $PROCESO_ACTIVO = true ] || [[ $CICLO = 10000 ]]
 do
 	for file in "$novedades/"*.csv;
 	do
 		let CICLO=CICLO+1
+		#loggear el CICLO en el que voy
+		echo "Ciclo Nº: $CICLO"
+		./glog.sh "proc" "Ciclo Nº: $CICLO"
 		if [ "$(ls $novedades/)" ]
     	then  
 			nombreArchivo="${file##*$novedades/}"
@@ -381,13 +389,15 @@ do
 				mv $archivo $aceptados					# Mueve a la carpeta de aceptados
 				# Grabar en el log el nombre del archivo aceptado
 				./glog.sh "proc" "Archivo $archivo aceptado"
+				./glog.sh "proc" "Archivo $archivo movido a $aceptados"
 			else
 				mv $archivo $rechazados					# Mueve a la carpeta de rechazados
 				./glog.sh "proc" "Archivo $archivo rechazado"
+				./glog.sh "proc" "Archivo $archivo movido a $rechazados"
 			fi
      	else
          	echo "Nada por procesar"
-         	./glog.sh "proc" "No hay archivos en $novedades..."
+         	./glog.sh "proc" "No hay archivos en $novedades"
          	break
      	fi
 		
@@ -399,9 +409,6 @@ do
 	fi
 
 	sleep 10
-
-	#loggear el CICLO en el que voy
-	./glog.sh "proc" "Ciclo Nº: $CICLO"
 
 done
 
