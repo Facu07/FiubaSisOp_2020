@@ -220,7 +220,6 @@ function obtener_cResponseCodeShortDescription
 
 codigos_Respuestas_Gateway="$maestro/Codigos_Respuestas_Gateway.csv"
 iso09_ResponseCodeAux=$(cut -d':' -f2 <<<$iso09_ResponseCode)
-echo "$iso09_ResponseCodeAux"
 
 while IFS='		' read iso09_ResponseCode shortDescription longDescription
 do
@@ -232,7 +231,6 @@ do
 done < "$codigos_Respuestas_Gateway"
 
 isO15_cResponseCodeShortDescription="\"isO15_cResponseCodeShortDescription\": \"ERROR NO ESPECIFICADO\""
-echo "$isO15_cResponseCodeShortDescription"
 
 }
 
