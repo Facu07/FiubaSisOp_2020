@@ -51,20 +51,35 @@ En caso de que ya se encuentre un proceso daemon corriendo, no se correra uno ad
 0504-C-23456789.csv
 
 0504-M-72501608.csv
+
 0506-B-34567890.csv
+
 0506-C-23456789.csv
+
 0506-M-72501608.csv
+
 0506-X-72501607.csv
+
 0507-C-23456789.csv
+
 0507-M-72501608.csv
+
 0515-B-12345678.csv
+
 0515-X-72501733.csv
+
 0516-B-12345678.csv
+
 0516-B-34567890.csv
+
 0517-X-72501733.csv
+
 0520-X-72501608.csv
+
 0522-X-72501608.csv
+
 1231-B-34567890.csv
+
 
 
 
