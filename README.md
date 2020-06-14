@@ -22,6 +22,8 @@ Se puede ingresar una ruta, pero tambien da la opcion de asignar por defecto sol
 - Finalmente, muestra un mensaje del estado de la instalacion exitosa.
 - En caso que se ejecute el comando ./install.sh nuevamente, mostrará por pantalla un mensaje diciendo que el programa ha sido instalado correctamente.
 
+# Reparación de la instalación
+- En caso de que el programa necesite reparación, ya sea por falta de algun directorio o algun archivo, se deberá correr el comando ./install.sh -r  . Esto pedirá nuevamente la ruta de los directorios y finalmente mostrará por pantalla que el programa ha sido reparado con los directorios asignados.
 
 
 
