@@ -27,7 +27,6 @@ Se puede ingresar una ruta, pero tambien da la opcion de asignar por defecto sol
 
 
 
-
 # Instrucciones de inicialización
 - Ir al directorio de los ejecutables (por defecto bin) y ejecutar por la terminal el comando ./inicio.sh
 - Se informará si se inicializa por primera vez el sistema, da una lista de todos los directorios que existen, se da permiso de lectura al directorio que contiene los archivos maestros y se da permisos de lectura y ejecucion al directorio que contiene los archivos ejecutables.
@@ -42,9 +41,17 @@ En caso de que ya se encuentre un proceso daemon corriendo, no se correra uno ad
 - Para procesar archivos debe colocar los archivos de lotes dentro del directorio novedades.
 
 
-# Estructuras
+# Instrucciones de una prueba completa 
 
-- Grupo_02/conf/tpconfig.txt
+1) Se instaló el sistema como se indica en Instalacion.
+2) Se Corrobora que se muevan correctamente los archivos originales en sus respectivos directorios.
+2) Luego se arrancó el script inicio.sh como se indica en Instrucciones de inicialización.
+3) Se mueve manualmente un archivo para ser procesado al directorio nove (corresponde a novedades).
+4) Pasado unos segundos se verifica que se haya procesado el archivo segun de detalla en el informe.
+5) Se verifica el log, que se hayan detallado todos los pasos.
+6) Se verifica que el directorio sea el correcto, dependiendo de que tipo de salida de el archivo procesado.
+7) Se verifica que el archivo este procesado segun se detalla en el informe.
+
 
 # Listado de archivos de prueba dados por la cátedra
 
