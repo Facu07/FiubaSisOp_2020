@@ -230,7 +230,6 @@ while IFS='		' read iso09_ResponseCode shortDescription longDescription
 do
 	if [[ "$cResponseCodeAux" = *"$iso09_ResponseCode"* ]]
 	then
-		echo "entro al if"
 		isO15_cResponseCodeShortDescription="\"isO15_cResponseCodeShortDescription\": \"$shortDescription\""
 		return 0
 	fi
@@ -365,6 +364,7 @@ horaCierre="$HORACIERRE"
 
 
 ./glog.sh "proc" "Procesando... "
+echpo "Procesando..."
 function finalizar_proceso {
    let PROCESO_ACTIVO=false
 }
@@ -378,7 +378,6 @@ do
 	do
 		let CICLO=CICLO+1
 		#loggear el CICLO en el que voy
-		echo "Ciclo Nº: $CICLO"
 		./glog.sh "proc" "Ciclo Nº: $CICLO"
 		if [ "$(ls $novedades/)" ]
     	then  
