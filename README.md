@@ -6,7 +6,7 @@
 ****************************************************************************************************************************************
 
 # Descarga y descompresión del sistema
-- Descargarel paquete Grupo_02.tar.gz del siguiente link: https://github.com/Facu07/FiubaSisOp_2020
+- Descargar el paquete Grupo_02.tar.gz del siguiente link: https://github.com/Facu07/FiubaSisOp_2020
 - Mover el paquete a la ubicación que usted desee.
 - Abrir la terminal en la ubicación elegida y ejecutar el comando tar -xvf Grupo02.tar.gz
 - Se obtendrá dentro de la ubicación el install.sh y una carpeta con el paquete de la aplicación. 
