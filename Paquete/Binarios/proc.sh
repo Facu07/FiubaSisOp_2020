@@ -110,6 +110,7 @@ do
 	fi
 done < "$codigosProvincias"
 
+echo "Se rechaza el $nombreArchivo por tener un codigo de provincia no valido"
 ./glog.sh "proc" "Se rechaza el $nombreArchivo por tener un codigo de provincia no valido"
 return -1
 
@@ -132,6 +133,7 @@ do
 	fi
 done < "$codigosComercios"
 
+echo "Se rechaza el $nombreArchivo por tener un codigo de comercio no valido"
 ./glog.sh "proc" "Se rechaza el $nombreArchivo por tener un codigo de comercio no valido"
 return -1
 
@@ -186,6 +188,8 @@ do
 			procesarSalida
 		else
 			echo -e "$idTransaction,$cProcessingCode,$nTransactionAmount,$cSystemTrace,$cLocalTransactionTime,$cRetrievalReferenceNumber,$cAuthorizationResponse,$cResponseCode,$installments,$hostResponse,$cTicketNumber,$batchNumber,$cGuid,$cMessageType,$cMessageType_Response,Registro: $CANTREGISTROS no cumple con la estrucutra,$nombreArchivo" >> "$rechazados/rejectedData.csv"
+			echo "$nombreArchivo tiene $CANTREGISTROS° registro con anomalía y se lo graba en archivo rejectedData.csv"
+			./glog.sh "proc" "$nombreArchivo tiene $CANTREGISTROS° registro con anomalía y se lo graba en archivo rejectedData.csv"
 		fi
 	done < "$file"
 	./glog.sh "proc" "$nombreArchivo tiene $CANTREGISTROS cantidad de registros"
@@ -219,12 +223,14 @@ function obtener_cResponseCodeShortDescription
 {
 
 codigos_Respuestas_Gateway="$maestro/Codigos_Respuestas_Gateway.csv"
-iso09_ResponseCodeAux=$(cut -d':' -f2 <<<$iso09_ResponseCode)
+cResponseCodeAux="$(cut -d':' -f2 <<<$cResponseCode)"
+
 
 while IFS='		' read iso09_ResponseCode shortDescription longDescription
 do
-	if [[ $cResponseCode = $iso09_ResponseCodeAux ]]
+	if [[ "$cResponseCodeAux" = *"$iso09_ResponseCode"* ]]
 	then
+		echo "entro al if"
 		isO15_cResponseCodeShortDescription="\"isO15_cResponseCodeShortDescription\": \"$shortDescription\""
 		return 0
 	fi
